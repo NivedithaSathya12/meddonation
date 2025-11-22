@@ -1,0 +1,20 @@
+streamlit
+pandas
+requests
+gTTS
+pyttsx3
+playsound
+sqlalchemy
+# add any other libs you used (transformers/torch optional)
+
+# transformers
+# torch
+# soundfile
+
+# Optional: transformers/torch/soundfile for local ASR and classification
+# Only install if you want to use local models instead of HF Inference API
+# These are heavy dependencies (~2-3 GB) and only needed for local ML mode
+# Uncomment the lines below if needed:
+# transformers
+# torch
+# soundfile

@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+meddonation.db
+app.log
+.env
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
