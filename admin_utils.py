@@ -1,203 +1,46 @@
 # admin_utils.py
 """
-Database helper functions for admin UI.
-All queries are parameterized and exceptions are logged to app.log.
-Returns pandas.DataFrame for display when appropriate.
+Database helper utilities for meddonation app.
+Keeps functions for user management, NGO management, donations, and shelf-life.
+Uses sqlite3 and pandas for simple operations.
 """
 
 import sqlite3
-import pandas as pd
-import logging
 from pathlib import Path
+import hashlib
+import pandas as pd
 
-DB = "meddonation.db"
-
-# Setup logger
-logger = logging.getLogger("meddonation_admin")
-if not logger.handlers:
-    fh = logging.FileHandler("app.log")
-    fh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s: %(message)s"))
-    logger.setLevel(logging.INFO)
-    logger.addHandler(fh)
-
+DB_PATH = Path("meddonation.db")
 
 def _connect():
-    # Ensure DB file exists in current working dir
-    db_file = Path(DB)
-    conn = sqlite3.connect(str(db_file))
-    return conn
+    return sqlite3.connect(str(DB_PATH))
 
-
-def get_recent_donations(limit=100, filters=None):
-    """
-    Return recent donations as pandas.DataFrame.
-    - limit: maximum rows
-    - filters: dict with optional substrings: donor_name, medicine_name, city
-    """
-    try:
-        conn = _connect()
-        base = (
-            "SELECT d.id, d.donor_name, d.medicine_name, d.batch_date, "
-            "d.expiry_date, d.status, d.matched_ngo_id, n.name as ngo_name, n.city as ngo_city "
-            "FROM donations d LEFT JOIN ngos n ON d.matched_ngo_id = n.id"
-        )
-
-        clauses = []
-        params = []
-        if filters:
-            donor = filters.get("donor_name")
-            if donor:
-                clauses.append("LOWER(d.donor_name) LIKE ?")
-                params.append(f"%{donor.lower()}%")
-            med = filters.get("medicine_name")
-            if med:
-                clauses.append("LOWER(d.medicine_name) LIKE ?")
-                params.append(f"%{med.lower()}%")
-            city = filters.get("city")
-            if city:
-                clauses.append("LOWER(n.city) LIKE ?")
-                params.append(f"%{city.lower()}%")
-
-        where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
-        sql = f"{base}{where} ORDER BY d.id DESC LIMIT ?"
-        params.append(limit)
-
-        df = pd.read_sql_query(sql, conn, params=params)
-        conn.close()
-
-        # Ensure columns exist and convert None to empty strings for display
-        for c in ["batch_date", "expiry_date", "status", "ngo_name", "ngo_city"]:
-            if c in df.columns:
-                df[c] = df[c].fillna("")
-
-        return df
-
-    except Exception:
-        logger.exception("get_recent_donations failed")
-        return pd.DataFrame()
-
-
-def get_all_ngos():
-    try:
-        conn = _connect()
-        df = pd.read_sql_query("SELECT * FROM ngos ORDER BY id", conn)
-        conn.close()
-        return df
-    except Exception:
-        logger.exception("get_all_ngos failed")
-        return pd.DataFrame()
-
-
-def get_all_shelf_life():
-    try:
-        conn = _connect()
-        df = pd.read_sql_query("SELECT * FROM shelf_life ORDER BY id", conn)
-        conn.close()
-        return df
-    except Exception:
-        logger.exception("get_all_shelf_life failed")
-        return pd.DataFrame()
-
-
-def insert_ngo(name, city, contact, accepts):
-    try:
-        conn = _connect()
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO ngos (name, city, contact, accepts) VALUES (?, ?, ?, ?)",
-            (name, city, contact, accepts),
-        )
-        conn.commit()
-        nid = cur.lastrowid
-        conn.close()
-        return nid
-    except Exception:
-        logger.exception("insert_ngo failed")
-        return False
-
-
-def update_ngo(nid, name, city, contact, accepts):
-    try:
-        conn = _connect()
-        cur = conn.cursor()
-        cur.execute(
-            "UPDATE ngos SET name=?, city=?, contact=?, accepts=? WHERE id=?",
-            (name, city, contact, accepts, nid),
-        )
-        conn.commit()
-        conn.close()
-        return True
-    except Exception:
-        logger.exception("update_ngo failed")
-        return False
-
-
-def insert_shelf(medicine_name, shelf_months, notes):
-    try:
-        conn = _connect()
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT OR REPLACE INTO shelf_life (medicine_name, shelf_months, notes) VALUES (?, ?, ?)",
-            (medicine_name.lower(), int(shelf_months), notes),
-        )
-        conn.commit()
-        conn.close()
-        return True
-    except Exception:
-        logger.exception("insert_shelf failed")
-        return False
-
-
-def delete_donation(did):
-    try:
-        conn = _connect()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM donations WHERE id=?", (did,))
-        conn.commit()
-        conn.close()
-        return True
-    except Exception:
-        logger.exception("delete_donation failed")
-        return False
-
-
-def insert_donation(donor, medicine, batch_date, expiry_date, status, ngo_id):
-    try:
-        conn = _connect()
-        cur = conn.cursor()
-        cur.execute(
-            """
-            INSERT INTO donations (donor_name, medicine_name, batch_date, expiry_date, status, matched_ngo_id)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (donor, medicine, batch_date, expiry_date, status, ngo_id),
-        )
-        conn.commit()
-        conn.close()
-        return True
-    except Exception:
-        logger.exception("insert_donation failed")
-        return False
-import hashlib
-
-def hash_password(password, salt="medsalt"):
+def hash_password(password: str, salt: str = "medsalt") -> str:
+    """Return sha256(salt+password) hex digest."""
     return hashlib.sha256((salt + password).encode("utf-8")).hexdigest()
 
-def create_user(username, password, role="donor", ngo_id=None):
+# ---------------- User helpers ----------------
+def create_user(username: str, password: str, role: str = "donor", ngo_id: int = None) -> bool:
+    """Create a user; returns True on success, False if username exists or error."""
     try:
         conn = _connect()
         cur = conn.cursor()
         ph = hash_password(password)
-        cur.execute("INSERT INTO users (username, password_hash, role, ngo_id) VALUES (?, ?, ?, ?)",
-                    (username, ph, role, ngo_id))
+        cur.execute(
+            "INSERT INTO users (username, password_hash, role, ngo_id) VALUES (?, ?, ?, ?)",
+            (username, ph, role, ngo_id)
+        )
         conn.commit()
         conn.close()
         return True
-    except Exception:
-        logger.exception("create_user failed")
+    except sqlite3.IntegrityError:
+        return False
+    except Exception as e:
+        print("create_user error:", e)
         return False
 
-def verify_user(username, password):
+def verify_user(username: str, password: str):
+    """Verify username/password. Returns user dict or None."""
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -210,18 +53,132 @@ def verify_user(username, password):
         if phash == hash_password(password):
             return {"id": uid, "username": username, "role": role, "ngo_id": ngo_id}
         return None
-    except Exception:
-        logger.exception("verify_user failed")
+    except Exception as e:
+        print("verify_user error:", e)
         return None
 
-def get_user_by_username(username):
+def get_user_by_username(username: str):
+    """Return user dict without password (or None)."""
     try:
         conn = _connect()
-        df = pd.read_sql_query("SELECT * FROM users WHERE username=?", conn, params=(username,))
+        cur = conn.cursor()
+        cur.execute("SELECT id, username, role, ngo_id FROM users WHERE username=?", (username,))
+        row = cur.fetchone()
         conn.close()
-        if df.empty:
-            return None
-        return df.iloc[0].to_dict()
-    except Exception:
-        logger.exception("get_user_by_username failed")
+        if row:
+            return {"id": row[0], "username": row[1], "role": row[2], "ngo_id": row[3]}
+    except Exception as e:
+        print("get_user_by_username error:", e)
+    return None
+
+# ---------------- NGO helpers ----------------
+def insert_ngo(name, city, contact, accepts):
+    """Insert NGO row and return new id, or None on error."""
+    try:
+        conn = _connect()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO ngos (name, city, contact, accepts) VALUES (?, ?, ?, ?)",
+                    (name, city, contact, accepts))
+        nid = cur.lastrowid
+        conn.commit()
+        conn.close()
+        return nid
+    except Exception as e:
+        print("insert_ngo error:", e)
         return None
+
+def update_ngo(nid, name, city, contact, accepts):
+    try:
+        conn = _connect()
+        cur = conn.cursor()
+        cur.execute("UPDATE ngos SET name=?, city=?, contact=?, accepts=? WHERE id=?", (name, city, contact, accepts, nid))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print("update_ngo error:", e)
+        return False
+
+def get_all_ngos():
+    """Return pandas DataFrame of all NGOs (id, name, city, contact, accepts)."""
+    try:
+        conn = _connect()
+        df = pd.read_sql_query("SELECT * FROM ngos", conn)
+        conn.close()
+        return df
+    except Exception as e:
+        print("get_all_ngos error:", e)
+        return pd.DataFrame(columns=["id","name","city","contact","accepts"])
+
+# ---------------- Shelf-life helpers ----------------
+def insert_shelf(medicine_name: str, shelf_months: int, notes: str = ""):
+    try:
+        conn = _connect()
+        cur = conn.cursor()
+        cur.execute("INSERT OR REPLACE INTO shelf_life (medicine_name, shelf_months, notes) VALUES (?, ?, ?)",
+                    (medicine_name.lower(), int(shelf_months), notes))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print("insert_shelf error:", e)
+        return False
+
+def get_all_shelf_life():
+    try:
+        conn = _connect()
+        df = pd.read_sql_query("SELECT * FROM shelf_life", conn)
+        conn.close()
+        return df
+    except Exception as e:
+        print("get_all_shelf_life error:", e)
+        return pd.DataFrame(columns=["id","medicine_name","shelf_months","notes"])
+
+# ---------------- Donation helpers ----------------
+def insert_donation(donor_name, medicine_name, batch_date, expiry_date, status, matched_ngo_id):
+    try:
+        conn = _connect()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO donations (donor_name, medicine_name, batch_date, expiry_date, status, matched_ngo_id) VALUES (?, ?, ?, ?, ?, ?)",
+            (donor_name, medicine_name, batch_date, expiry_date, status, matched_ngo_id)
+        )
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print("insert_donation error:", e)
+        return False
+
+def delete_donation(did):
+    try:
+        conn = _connect()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM donations WHERE id=?", (did,))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print("delete_donation error:", e)
+        return False
+
+def get_recent_donations(limit=500, filters=None):
+    """
+    Return pandas DataFrame of recent donations. 'filters' is a dict but kept simple.
+    """
+    try:
+        conn = _connect()
+        query = "SELECT * FROM donations ORDER BY id DESC LIMIT ?"
+        df = pd.read_sql_query(query, conn, params=(limit,))
+        conn.close()
+        return df
+    except Exception as e:
+        print("get_recent_donations error:", e)
+        return pd.DataFrame()
+
+# ---------------- Utility: print small summary ----------------
+if __name__ == "__main__":
+    print("Tables preview:")
+    print("NGOs:", get_all_ngos().head().to_dict(orient="records"))
+    print("Shelf:", get_all_shelf_life().head().to_dict(orient="records"))
+    print("Users sample:", pd.read_sql_query("SELECT id,username,role,ngo_id FROM users LIMIT 10", _connect()).to_dict(orient="records"))
