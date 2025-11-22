@@ -10,7 +10,10 @@ Features:
 - Password change, logout, simple styling
 Run: python -m streamlit run app.py
 """
-
+import os
+if not os.path.exists("meddonation.db"):
+    import db_init
+    db_init.ensure_db()
 import streamlit as st
 import pandas as pd
 from datetime import datetime
