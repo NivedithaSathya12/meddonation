@@ -58,3 +58,5 @@ Write-Host "`nNext steps:" -ForegroundColor Cyan
 Write-Host "  1. Initialize database: $pythonCmd db_init.py" -ForegroundColor White
 Write-Host "  2. Run application: $pythonCmd -m streamlit run app.py" -ForegroundColor White
 
+
+

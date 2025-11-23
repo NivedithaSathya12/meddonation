@@ -1,35 +1,83 @@
 # admin_utils.py
 """
-Database helper utilities for meddonation app.
-Keeps functions for user management, NGO management, donations, and shelf-life.
-Uses sqlite3 and pandas for simple operations.
+Admin database utilities for meddonation (updated).
+Provides:
+- create_user / verify_user / get_user_by_username
+- insert_ngo / update_ngo / get_all_ngos
+- insert_shelf / get_all_shelf_life
+- insert_donation / delete_donation / get_recent_donations
+Notes:
+- Uses sqlite file 'meddonation.db' in current working directory.
+- Passwords are salted SHA-256 hashes (simple; for production use stronger methods).
 """
 
 import sqlite3
 from pathlib import Path
 import hashlib
 import pandas as pd
+import os
+from typing import Optional
 
 DB_PATH = Path("meddonation.db")
 
 def _connect():
     return sqlite3.connect(str(DB_PATH))
 
+def _ensure_tables():
+    """Create tables if they do not exist (safe to call repeatedly)."""
+    conn = _connect()
+    cur = conn.cursor()
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS shelf_life (
+        id INTEGER PRIMARY KEY,
+        medicine_name TEXT UNIQUE,
+        shelf_months INTEGER,
+        notes TEXT
+    )""")
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS ngos (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        city TEXT,
+        contact TEXT,
+        accepts TEXT
+    )""")
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS donations (
+        id INTEGER PRIMARY KEY,
+        donor_name TEXT,
+        medicine_name TEXT,
+        batch_date TEXT,
+        expiry_date TEXT,
+        status TEXT,
+        matched_ngo_id INTEGER
+    )""")
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY,
+        username TEXT UNIQUE,
+        password_hash TEXT,
+        role TEXT,
+        ngo_id INTEGER
+    )""")
+    conn.commit()
+    conn.close()
+
+# ensure DB schema
+_ensure_tables()
+
 def hash_password(password: str, salt: str = "medsalt") -> str:
-    """Return sha256(salt+password) hex digest."""
     return hashlib.sha256((salt + password).encode("utf-8")).hexdigest()
 
-# ---------------- User helpers ----------------
-def create_user(username: str, password: str, role: str = "donor", ngo_id: int = None) -> bool:
-    """Create a user; returns True on success, False if username exists or error."""
+# ---------------- User functions ----------------
+def create_user(username: str, password: str, role: str = "donor", ngo_id: Optional[int] = None) -> bool:
+    """Create a user row. Returns True on success, False if username exists or error."""
     try:
         conn = _connect()
         cur = conn.cursor()
         ph = hash_password(password)
-        cur.execute(
-            "INSERT INTO users (username, password_hash, role, ngo_id) VALUES (?, ?, ?, ?)",
-            (username, ph, role, ngo_id)
-        )
+        cur.execute("INSERT INTO users (username, password_hash, role, ngo_id) VALUES (?, ?, ?, ?)",
+                    (username, ph, role, ngo_id))
         conn.commit()
         conn.close()
         return True
@@ -39,8 +87,8 @@ def create_user(username: str, password: str, role: str = "donor", ngo_id: int =
         print("create_user error:", e)
         return False
 
-def verify_user(username: str, password: str):
-    """Verify username/password. Returns user dict or None."""
+def verify_user(username: str, password: str) -> Optional[dict]:
+    """Verify credentials. Returns user dict (id, username, role, ngo_id) or None."""
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -57,8 +105,7 @@ def verify_user(username: str, password: str):
         print("verify_user error:", e)
         return None
 
-def get_user_by_username(username: str):
-    """Return user dict without password (or None)."""
+def get_user_by_username(username: str) -> Optional[dict]:
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -71,9 +118,8 @@ def get_user_by_username(username: str):
         print("get_user_by_username error:", e)
     return None
 
-# ---------------- NGO helpers ----------------
-def insert_ngo(name, city, contact, accepts):
-    """Insert NGO row and return new id, or None on error."""
+# ---------------- NGO functions ----------------
+def insert_ngo(name: str, city: str, contact: str, accepts: str) -> Optional[int]:
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -87,7 +133,7 @@ def insert_ngo(name, city, contact, accepts):
         print("insert_ngo error:", e)
         return None
 
-def update_ngo(nid, name, city, contact, accepts):
+def update_ngo(nid: int, name: str, city: str, contact: str, accepts: str) -> bool:
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -99,8 +145,7 @@ def update_ngo(nid, name, city, contact, accepts):
         print("update_ngo error:", e)
         return False
 
-def get_all_ngos():
-    """Return pandas DataFrame of all NGOs (id, name, city, contact, accepts)."""
+def get_all_ngos() -> pd.DataFrame:
     try:
         conn = _connect()
         df = pd.read_sql_query("SELECT * FROM ngos", conn)
@@ -110,8 +155,8 @@ def get_all_ngos():
         print("get_all_ngos error:", e)
         return pd.DataFrame(columns=["id","name","city","contact","accepts"])
 
-# ---------------- Shelf-life helpers ----------------
-def insert_shelf(medicine_name: str, shelf_months: int, notes: str = ""):
+# ---------------- Shelf-life ----------------
+def insert_shelf(medicine_name: str, shelf_months: int, notes: str = "") -> bool:
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -124,7 +169,7 @@ def insert_shelf(medicine_name: str, shelf_months: int, notes: str = ""):
         print("insert_shelf error:", e)
         return False
 
-def get_all_shelf_life():
+def get_all_shelf_life() -> pd.DataFrame:
     try:
         conn = _connect()
         df = pd.read_sql_query("SELECT * FROM shelf_life", conn)
@@ -134,8 +179,8 @@ def get_all_shelf_life():
         print("get_all_shelf_life error:", e)
         return pd.DataFrame(columns=["id","medicine_name","shelf_months","notes"])
 
-# ---------------- Donation helpers ----------------
-def insert_donation(donor_name, medicine_name, batch_date, expiry_date, status, matched_ngo_id):
+# ---------------- Donations ----------------
+def insert_donation(donor_name: str, medicine_name: str, batch_date: str, expiry_date: str, status: str, matched_ngo_id: Optional[int]) -> bool:
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -150,7 +195,7 @@ def insert_donation(donor_name, medicine_name, batch_date, expiry_date, status, 
         print("insert_donation error:", e)
         return False
 
-def delete_donation(did):
+def delete_donation(did: int) -> bool:
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -162,23 +207,24 @@ def delete_donation(did):
         print("delete_donation error:", e)
         return False
 
-def get_recent_donations(limit=500, filters=None):
-    """
-    Return pandas DataFrame of recent donations. 'filters' is a dict but kept simple.
-    """
+def get_recent_donations(limit: int = 500, filters: dict = None) -> pd.DataFrame:
     try:
         conn = _connect()
-        query = "SELECT * FROM donations ORDER BY id DESC LIMIT ?"
-        df = pd.read_sql_query(query, conn, params=(limit,))
+        df = pd.read_sql_query("SELECT * FROM donations ORDER BY id DESC LIMIT ?", conn, params=(limit,))
         conn.close()
         return df
     except Exception as e:
         print("get_recent_donations error:", e)
         return pd.DataFrame()
 
-# ---------------- Utility: print small summary ----------------
+# ---------------- Utility (debug) ----------------
 if __name__ == "__main__":
-    print("Tables preview:")
-    print("NGOs:", get_all_ngos().head().to_dict(orient="records"))
-    print("Shelf:", get_all_shelf_life().head().to_dict(orient="records"))
-    print("Users sample:", pd.read_sql_query("SELECT id,username,role,ngo_id FROM users LIMIT 10", _connect()).to_dict(orient="records"))
+    print("admin_utils test run")
+    print("DB path:", DB_PATH)
+    print("NGOs sample:", get_all_ngos().head().to_dict(orient="records"))
+    print("Shelf sample:", get_all_shelf_life().head().to_dict(orient="records"))
+    try:
+        import pandas as pd
+        print("Users sample:", pd.read_sql_query("SELECT id,username,role,ngo_id FROM users LIMIT 10", _connect()).to_dict(orient="records"))
+    except Exception:
+        pass

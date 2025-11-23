@@ -96,3 +96,5 @@ Write-Host "To run the application, use:" -ForegroundColor Cyan
 Write-Host "  $pythonExe -m streamlit run app.py" -ForegroundColor White
 Write-Host ""
 
+
+
