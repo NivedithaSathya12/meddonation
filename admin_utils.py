@@ -18,7 +18,7 @@ import pandas as pd
 import os
 from typing import Optional
 
-DB_PATH = Path("meddonation.db")
+DB_PATH = Path("meddonationn.db")
 
 def _connect():
     return sqlite3.connect(str(DB_PATH))
