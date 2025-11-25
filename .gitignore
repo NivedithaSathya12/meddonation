@@ -1,9 +1,11 @@
-venv/
-__pycache__/
+# .gitignore - ignore local DB and uploads
+meddonationn.db
 meddonation.db
-app.log
-.env
+meddonation.db.db
+meddonation_backup*.db
+/uploads/
+/__pycache__/
 *.pyc
-.pytest_cache/
-.coverage
-htmlcov/
+.env
+.DS_Store
+.vscode/

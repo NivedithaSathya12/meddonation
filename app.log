@@ -1,0 +1,108 @@
+2025-11-22 15:00:08,096 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 15:00:08,099 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 15:00:17,187 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 15:00:17,192 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 15:00:18,229 - INFO - Retrieved 0 donations
+2025-11-22 15:00:18,244 - INFO - Retrieved 2 NGOs
+2025-11-22 15:00:18,397 - INFO - Retrieved 3 shelf life entries
+2025-11-22 15:00:18,426 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 20:07:18,728 - INFO - Database tables created/verified successfully
+2025-11-22 20:07:18,728 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 20:07:18,728 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 20:07:28,404 - INFO - Database tables created/verified successfully
+2025-11-22 20:07:28,404 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 20:07:28,420 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 20:07:28,819 - INFO - Retrieved 0 donations
+2025-11-22 20:07:28,819 - INFO - Retrieved 2 NGOs
+2025-11-22 20:07:28,865 - INFO - Retrieved 3 shelf life entries
+2025-11-22 20:07:28,885 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 20:33:42,696 - INFO - Database tables created/verified successfully
+2025-11-22 20:33:42,696 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 20:33:42,696 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 20:33:48,584 - INFO - Database tables created/verified successfully
+2025-11-22 20:33:48,584 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 20:33:48,584 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 20:33:48,935 - INFO - Retrieved 0 donations
+2025-11-22 20:33:48,935 - INFO - Retrieved 2 NGOs
+2025-11-22 20:33:49,001 - INFO - Retrieved 3 shelf life entries
+2025-11-22 20:33:49,018 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 21:02:14,981 - INFO - Database tables created/verified successfully
+2025-11-22 21:02:14,981 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:02:14,982 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:02:15,002 - WARNING - Shelf life info not found for 'dolo'
+2025-11-22 21:02:15,044 - INFO - Retrieved 0 donations
+2025-11-22 21:02:15,049 - INFO - Retrieved 2 NGOs
+2025-11-22 21:02:15,080 - INFO - Retrieved 3 shelf life entries
+2025-11-22 21:02:15,105 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 21:02:30,127 - INFO - Database tables created/verified successfully
+2025-11-22 21:02:30,128 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:02:30,129 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:02:30,189 - INFO - Retrieved 0 donations
+2025-11-22 21:02:30,207 - INFO - Retrieved 2 NGOs
+2025-11-22 21:02:30,252 - INFO - Retrieved 3 shelf life entries
+2025-11-22 21:02:30,275 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 21:02:34,104 - INFO - Database tables created/verified successfully
+2025-11-22 21:02:34,110 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:02:34,111 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:02:34,171 - INFO - Retrieved 0 donations
+2025-11-22 21:02:34,181 - INFO - Retrieved 2 NGOs
+2025-11-22 21:02:34,214 - INFO - Retrieved 3 shelf life entries
+2025-11-22 21:02:34,233 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 21:02:40,285 - INFO - Database tables created/verified successfully
+2025-11-22 21:02:40,285 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:02:40,287 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:02:40,344 - INFO - Retrieved 0 donations
+2025-11-22 21:02:40,350 - INFO - Retrieved 2 NGOs
+2025-11-22 21:02:40,398 - INFO - Retrieved 3 shelf life entries
+2025-11-22 21:02:40,421 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 21:02:51,352 - INFO - Database tables created/verified successfully
+2025-11-22 21:02:51,352 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:02:51,354 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:02:51,374 - WARNING - Shelf life info not found for 'dolo'
+2025-11-22 21:02:51,418 - INFO - Retrieved 0 donations
+2025-11-22 21:02:51,424 - INFO - Retrieved 2 NGOs
+2025-11-22 21:02:51,468 - INFO - Retrieved 3 shelf life entries
+2025-11-22 21:02:51,501 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 3}
+2025-11-22 21:03:07,429 - INFO - Database tables created/verified successfully
+2025-11-22 21:03:07,430 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:03:07,432 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:03:07,495 - INFO - Retrieved 0 donations
+2025-11-22 21:03:07,506 - INFO - Retrieved 2 NGOs
+2025-11-22 21:03:07,542 - INFO - Retrieved 3 shelf life entries
+2025-11-22 21:03:07,608 - INFO - Inserted shelf life entry: dolo
+2025-11-22 21:03:07,693 - INFO - Database tables created/verified successfully
+2025-11-22 21:03:07,696 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:03:07,699 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:03:07,829 - INFO - Retrieved 0 donations
+2025-11-22 21:03:07,888 - INFO - Retrieved 2 NGOs
+2025-11-22 21:03:07,975 - INFO - Retrieved 4 shelf life entries
+2025-11-22 21:03:08,013 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 4}
+2025-11-22 21:03:15,910 - INFO - Database tables created/verified successfully
+2025-11-22 21:03:15,910 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:03:15,911 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:03:15,937 - INFO - Found shelf life info for 'dolo': 12 months
+2025-11-22 21:03:15,941 - INFO - Found 1 NGOs for medicine 'dolo' in city 'patna'
+2025-11-22 21:03:15,943 - INFO - Retrieved 2 NGOs
+2025-11-22 21:03:46,158 - INFO - Database tables created/verified successfully
+2025-11-22 21:03:46,158 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:03:46,160 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:03:46,188 - INFO - Found shelf life info for 'dolo': 12 months
+2025-11-22 21:03:46,195 - INFO - Retrieved 2 NGOs
+2025-11-22 21:03:56,034 - INFO - Database tables created/verified successfully
+2025-11-22 21:03:56,034 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:03:56,035 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:03:56,064 - WARNING - Shelf life info not found for 'paracetomol'
+2025-11-22 21:03:56,104 - INFO - Retrieved 0 donations
+2025-11-22 21:03:56,116 - INFO - Retrieved 2 NGOs
+2025-11-22 21:03:56,152 - INFO - Retrieved 4 shelf life entries
+2025-11-22 21:03:56,169 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 4}
+2025-11-22 21:13:41,680 - INFO - Database tables created/verified successfully
+2025-11-22 21:13:41,681 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:13:41,681 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:13:58,392 - INFO - Database tables created/verified successfully
+2025-11-22 21:13:58,393 - INFO - Database already exists. Skipping sample data insertion.
+2025-11-22 21:13:58,394 - INFO - Database initialized successfully at: C:\Users\DELL\Desktop\meddonation\meddonation.db
+2025-11-22 21:14:00,149 - INFO - Retrieved 0 donations
+2025-11-22 21:14:00,155 - INFO - Retrieved 2 NGOs
+2025-11-22 21:14:00,231 - INFO - Retrieved 4 shelf life entries
+2025-11-22 21:14:00,247 - INFO - Retrieved stats: {'total_donations': 0, 'total_ngos': 2, 'total_shelf_entries': 4}

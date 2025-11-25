@@ -2,8 +2,6 @@
 # This script installs dependencies using pre-built wheels
 
 Write-Host "=== Installing Dependencies ===" -ForegroundColor Cyan
-
-# Find Python
 $pythonCmd = $null
 if (Get-Command python -ErrorAction SilentlyContinue) {
     $pythonCmd = "python"
